@@ -31,9 +31,9 @@ class SmsBackend(BaseSmsBackend):
                     if TWILIO_MESSAGING_SID:
                         if TWILIO_5:
                             client.messages.create(
-                                body=message.body
+                                body=message.body,
                                 to=to,
-                                messaging_service_sid=TWILIO_MESSAGING_SID                                
+                                messaging_service_sid=TWILIO_MESSAGING_SID
                             )
                         else:
                             client.messages.create(
