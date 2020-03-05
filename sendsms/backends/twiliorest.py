@@ -19,6 +19,7 @@ else:
 
 TWILIO_ACCOUNT_SID = getattr(settings, "SENDSMS_TWILIO_ACCOUNT_SID", "")
 TWILIO_AUTH_TOKEN = getattr(settings, "SENDSMS_TWILIO_AUTH_TOKEN", "")
+TWILIO_MESSAGING_SID = getattr(settings, "SENDSMS_TWILIO_MESSAGING_SID", "")
 
 
 class SmsBackend(BaseSmsBackend):
@@ -27,14 +28,28 @@ class SmsBackend(BaseSmsBackend):
         for message in messages:
             for to in message.to:
                 try:
-                    if TWILIO_5:
-                        client.sms.messages.create(
-                            body=message.body, to=to, from_=message.from_phone
-                        )
+                    if TWILIO_MESSAGING_SID:
+                        if TWILIO_5:
+                            client.messages.create(
+                                body=message.body
+                                to=to,
+                                messaging_service_sid=TWILIO_MESSAGING_SID                                
+                            )
+                        else:
+                            client.messages.create(
+                                to=to,
+                                messaging_service_sid=TWILIO_MESSAGING_SID,
+                                body=message.body
+                            )
                     else:
-                        client.messages.create(
-                            to=to, from_=message.from_phone, body=message.body
-                        )
+                        if TWILIO_5:
+                            client.sms.messages.create(
+                                body=message.body, to=to, from_=message.from_phone
+                            )
+                        else:
+                            client.messages.create(
+                                to=to, from_=message.from_phone, body=message.body
+                            )
                 except:
                     if not self.fail_silently:
                         raise
